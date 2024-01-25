@@ -1,5 +1,8 @@
+import java.lang.RuntimeException
+
 data class Chat(
     val id: Int,
+    val idCompanion: Int,
     val date: Long
 )
 
@@ -15,6 +18,22 @@ data class Message(
     }
 }
 
-object ChatService {
+class ChatNotFoundException(message: String) : RuntimeException(message)
 
+object ChatService {
+    private val chats = mutableMapOf<Int, Chat>()
+    private val messagesChat = mutableMapOf<Int, MutableMap<Int, Message>>()
+    private var lastId: Int = 0
+    private var lastIdMessage: Int = 0
+
+    private fun <I, V> addChatMessage(ind: I, value: V, collect: MutableMap<I, V>) {
+        collect[ind] = value
+    }
+
+    fun addChat(
+        idCompanion: Int): Int {
+        lastId ++
+        addChatMessage(lastId, Chat(lastId, idCompanion, System.currentTimeMillis()), chats)
+        return lastId
+    }
 }
