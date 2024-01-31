@@ -102,6 +102,7 @@ object ChatService {
     }
 
     fun readMessage(idMessage: Int) {
+        messagesChat.toList().toList()
         messagesChat.forEach { (_, messChats) ->
             messChats.forEach { (k, message) ->
                 if (k == idMessage) {
