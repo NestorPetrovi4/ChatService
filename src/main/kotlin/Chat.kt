@@ -46,20 +46,15 @@ object ChatService {
         return lastId
     }
 
-    fun deleteChat(idChat: Int): Boolean {
-        messagesChat.remove(idChat)
-        return chats.remove(idChat) != null
-    }
+    fun deleteChat(idChat: Int) = messagesChat.remove(idChat) != null && chats.remove(idChat) != null
 
     private fun <T, E> MutableMap<T, E>.getList(): MutableList<E> {
         val list = mutableListOf<E>()
-        for (chat in this) {
-            list += chat.value
-        }
+        this.forEach { list.add(it.value) }
         return list
     }
 
-    fun getChats() = chats.getList()
+    fun getChats() = chats.mapValues { it.value }
 
     fun addMessage(idChat: Int = 0, text: String, incoming: Boolean = false, idCompanion: Int = -1): Int {
         if (chats.get(idChat) == null && idCompanion == -1) {
@@ -77,40 +72,21 @@ object ChatService {
         return lastIdMessage
     }
 
-    fun editMessage(idMessage: Int, text: String): Boolean {
-        messagesChat.forEach { (_, messChats) ->
-            messChats.forEach { (k, message) ->
-                if (k == idMessage) {
-                    message.message = text
-                    return true
-                }
-            }
-        }
-        return false
+    fun editMessage(idMessage: Int, text: String) {
+        messagesChat.forEach { it.value.filter { it.key == idMessage }.forEach { it.value.message = text } }
     }
 
     fun deleteMessage(idMessage: Int): Boolean {
-        messagesChat.forEach { (_, messChats) ->
-            messChats.forEach { (k, message) ->
-                if (k == idMessage) {
-                    messChats.remove(idMessage)
-                    return true
-                }
-            }
+        messagesChat.forEach {
+            it.value.filter { it.key == idMessage }.forEach { (k, _) -> return it.value.remove(idMessage) != null }
         }
         return false
     }
 
     fun readMessage(idMessage: Int) {
-        messagesChat.toList().toList()
-        messagesChat.forEach { (_, messChats) ->
-            messChats.forEach { (k, message) ->
-                if (k == idMessage) {
-                    message.read = true
-                }
-            }
-        }
+        messagesChat.forEach { it.value.filter { it.key == idMessage }.forEach { (_, v) -> v.read = true } }
     }
+
 
     fun getUnreadChatsCount() = messagesChat.count() { it.value.filter { !it.value.read }.isNotEmpty() }
 
@@ -118,10 +94,10 @@ object ChatService {
         val stringBuilder = StringBuilder()
         messagesChat.forEach { (k, v) ->
             stringBuilder.append(
-                "чат с пользователем " + (chats[k]?.idCompanion ?: "Пустой чат") + " " + if (v.isNotEmpty()) v.getList()
+                "чат с пользователем " + (chats[k]?.idCompanion ?: "Пустой чат") + " " + v.getList()
+                    .ifEmpty { listOf(Message(0, 0, "Нет сообщений", date = 1, incoming = false)) }
                     .sorted()
-                    .last().message + "\n" else "Нет сообщений\n"
-            )
+                    .last().message + "\n")
         }
         return stringBuilder.toString()
     }
