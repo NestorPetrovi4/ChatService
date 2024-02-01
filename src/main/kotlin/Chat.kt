@@ -94,10 +94,9 @@ object ChatService {
         val stringBuilder = StringBuilder()
         messagesChat.forEach { (k, v) ->
             stringBuilder.append(
-                "чат с пользователем " + (chats[k]?.idCompanion ?: "Пустой чат") + " " + v.getList()
-                    .ifEmpty { listOf(Message(0, 0, "Нет сообщений", date = 1, incoming = false)) }
+                "чат с пользователем " + (chats[k]?.idCompanion ?: "Пустой чат") + " " + (v.getList()
                     .sorted()
-                    .last().message + "\n")
+                    .lastOrNull()?.message ?: "Нет сообщений") + "\n")
         }
         return stringBuilder.toString()
     }
