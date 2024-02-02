@@ -31,6 +31,20 @@ class ChatServiceTest {
     }
 
     @Test
+    fun deleteMessage() {
+        ChatService.addChat(100)
+        ChatService.addChat(200)
+        ChatService.addChat(300)
+        ChatService.addMessage(1, "Первое сообщение")
+        ChatService.addMessage(1, "Второе сообщение")
+        ChatService.addMessage(1, "Третье сообщение")
+        val countStart = ChatService.getMessageFilter(100).count()
+        ChatService.deleteMessage(2)
+        val countFinish = ChatService.getMessageFilter(100).count()
+        assertEquals(true, countStart - countFinish == 1)
+    }
+
+    @Test
     fun getUnreadMessage() {
         ChatService.addChat(100)
         ChatService.addChat(200)
@@ -51,6 +65,7 @@ class ChatServiceTest {
         ChatService.addMessage(1, "Первая запись")
         ChatService.addMessage(1, "Вторая запись")
         ChatService.addMessage(1, "Третья запись")
+        println(ChatService.getLastMessageChat())
         assertEquals(ChatService.getLastMessageChat(), "чат с пользователем 100 Третья запись\nчат с пользователем 200 Нет сообщений\n")
     }
     @Test
