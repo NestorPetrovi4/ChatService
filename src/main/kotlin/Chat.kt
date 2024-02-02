@@ -106,6 +106,6 @@ object ChatService {
         var list = mutableListOf<Message>()
         messagesChat.filter { chats[it.key]?.idCompanion ?: 0 == idCompanion }
            .forEach { list.addAll(it.value.getList()) }
-        return list.take(countMessage).onEach { it.read = true }
+        return list.asSequence().take(countMessage).onEach { it.read = true }.toList()
     }
 }
