@@ -96,17 +96,16 @@ object ChatService {
             stringBuilder.append(
                 "чат с пользователем " + (chats[k]?.idCompanion ?: "Пустой чат") + " " + (v.getList()
                     .sorted()
-                    .lastOrNull()?.message ?: "Нет сообщений") + "\n")
+                    .lastOrNull()?.message ?: "Нет сообщений") + "\n"
+            )
         }
         return stringBuilder.toString()
     }
 
-    fun getMessageFilter(idCompanion: Int, countMessage: Int = 0): List<Message> {
+    fun getMessageFilter(idCompanion: Int, countMessage: Int = 2_147_483_647): List<Message> {
         var list = mutableListOf<Message>()
-        messagesChat.filter { (k, _) -> chats[k]?.idCompanion ?: 0 == idCompanion }
-            .forEach { (k, v) -> list.addAll(v.getList()) }
-        list = if (countMessage != 0) list.subList(0, countMessage) else list
-        list.forEach { it.read = true }
-        return list
+        messagesChat.filter { chats[it.key]?.idCompanion ?: 0 == idCompanion }
+           .forEach { list.addAll(it.value.getList()) }
+        return list.take(countMessage).onEach { it.read = true }
     }
 }

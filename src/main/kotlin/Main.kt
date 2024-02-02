@@ -25,4 +25,8 @@ fun main() {
     ChatService.addMessage(text = "Сообщение без чата", idCompanion = 900)
     println("Последние сообщения в чатах: \n" + ChatService.getLastMessageChat())
 
+    val chat: Chat? = Chat(1, 2,3)
+    val title = chat!!.id
+
+
 }
